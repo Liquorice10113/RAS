@@ -1,0 +1,192 @@
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<title></title>
+		<script src="/static/jquery-3.6.0.js"></script>
+		<style>
+		*{
+			margin: 0;
+			padding: 0;
+		}
+		body{
+			height: 100%;
+			width: 100%;
+		}
+		.table_row{
+			margin-top: 0.1in;
+			float: left;
+			height: 0.5in;
+		}
+		.table_row div{
+			line-height: 0.5in;
+			text-align: center;
+			float: left;
+			height: 100%;
+			margin-left: 0.1in;
+			width: 0.8in;
+			background-color: aqua;
+		}
+		.delrow{
+			margin-top: 0.2in;
+			color: white;
+			float: left;
+			height: 0.3in;
+			width: 0.3in;
+			background-color: red;
+			text-align: center;
+			line-height: 0.25in;
+			border-radius: 0.15in;
+			font-size: 0.3in;
+			box-shadow: #aaa 2px 2px 2px;
+		}
+		.table{
+			
+		}
+		#add_entry_cover{
+			position: absolute;
+			height: 100%;
+			width: 100%;
+			left: 0;
+			top: 0;
+			background-color: rgba(0,0,0,0.2);
+		}
+		#add_entry{
+			border-radius: 5px;
+			position: absolute;
+			height: 40%;
+			width: 25%;
+			background-color: white;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%,-50%);
+			overflow-x: hidden;
+			overflow-y: scroll;
+		}
+		.input_row{
+			width: 100%;
+			height: 0.3in;
+			margin-left: 0.3in;
+		}
+		.input_row div{
+			float: left;
+		}
+		.input_row input{
+			float: left;
+		}
+		#confirm{
+			user-select: none;
+			border-radius: 0.25in;
+			position: absolute;
+			text-align: center;
+			line-height: 0.5in;
+			height: 0.5in;
+			width: 0.5in;
+			background-color: forestgreen;
+			color: white;
+			left: 42%;
+			top: 75%;
+			transform: translate(-50%,-50%);
+		}
+		#cancel{
+			user-select: none;
+			border-radius: 0.25in;
+			position: absolute;
+			text-align: center;
+			line-height: 0.5in;
+			height: 0.5in;
+			width: 0.5in;
+			background-color: red;
+			color: white;
+			left: 58%;
+			top: 75%;
+			transform: translate(-50%,-50%);
+		}
+		#add_entry_btn{
+			user-select: none;
+			position: absolute;
+			bottom: 0.3in;
+			left: 50%;
+			transform: translateX(-50%);
+			background-color: cornflowerblue;
+			color: white;
+			height: 0.6in;
+			width: 0.6in;
+			border-radius: 0.3in;
+			line-height: 0.6in;
+			text-align: center;
+			font-size: 0.3in;
+		}
+		.table_row div:nth-child(1){
+			width: 0.8in;
+		}
+		.table_row div:nth-child(2){
+			width: 1.5in;
+		}
+		.table_row div:nth-child(3){
+			width: 1in;
+		}
+		.table_row div:nth-child(4){
+			width: 1in;
+		}
+		.table_row div:nth-child(5){
+			width: 2.5in;
+		}
+		.table_row div:nth-child(6){
+			width: 1in;
+		}
+		.table_row div:nth-child(7){
+			width: 1.5in;
+		}
+		.table_row div:nth-child(8){
+			width: 1in;
+		}
+		</style>
+		<script>
+		function input_row(){
+			
+		}
+		function cancel_input(){
+			$("#add_entry_cover").css("display","none")
+		}
+		function show_input(){
+			$("#add_entry_cover").css("display","block")
+			
+		}
+		</script>
+	</head>
+	<body>
+		<div class="table_row">
+			<div>序号</div>
+			<div>资产名称</div>
+			<div>资产编号</div>
+			<div>责任人</div>
+			<div>应用描述</div>
+			<div>重要性程度</div>
+			<div>备注</div>
+			<div>部门</div>
+		</div>
+		<div class="table">
+			{% for row in data %}
+			<div class="table_row">
+				{% for v in row %}
+				<div> {{v}} </div>
+				{% endfor %}
+			</div>
+			<div class="delrow" onclick="assets_del_row({{row[-1]}})">-</div>
+			{% endfor %}
+		</div>
+		<div id="add_entry_btn" onclick="show_input()">+</div>
+		<div id="add_entry_cover">
+			<div id="add_entry">
+			<div style="width: 100%;text-align: center;font-size: 0.2in;">请输入数据</div>
+				<div class="input_row"><div>value1:</div><input id="value1" /></div>
+				<div class="input_row"><div>value2:</div><input id="value1" /></div>
+				<div class="input_row"><div>value3:</div><input id="value1" /></div>
+				<div class="input_row"><div>value4:</div><input id="value1" /></div>
+				<div class="input_row"><div>value5:</div><input id="value1" /></div>
+			</div>
+			<div id="confirm" onclick="input_row()">确定</div>
+			<div id="cancel" onclick="cancel_input()">取消</div>
+		</div>
+	</body>
+</html>

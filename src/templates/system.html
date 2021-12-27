@@ -1,0 +1,128 @@
+<html>
+	<head>
+		<style>
+		*{
+			padding: 0;
+			margin: 0;
+			transition: ease-in-out 0.2s;
+		}
+		body {
+			background-color: #fafafa;
+			overflow-y: hidden;
+		}
+		#nav{
+			user-select: none ;
+			position: absolute;
+			top: 1in;
+			left: 10px;
+			height: 15in;
+			width: 10%;
+			min-width: 140px;
+		}
+		#content{
+			/* border-radius: 0.2in; */
+			position: absolute;
+			background-color: white;
+			left: 12%;
+			width: 88%;
+			height: 100%;
+			top: 0%;
+			overflow: hidden;
+			box-shadow:#606060 2px 2px 4px;
+		}
+		.nav_item{
+			border-radius: 5px;
+			text-align: center;
+			font-size: 0.18in;
+			line-height: 0.4in;
+			margin-top: 0.1in;
+			margin-bottom: 0.1in;
+			height: 0.4in;
+			width: 100%;
+			color: #777;
+			background-color: firebrick;
+			box-shadow:#999 2px 2px 2px;
+			color: white;
+		}
+		.nav_item_unselected{
+			border-radius: 5px;
+			text-align: center;
+			font-size: 0.18in;
+			line-height: 0.4in;
+			margin-top: 0.1in;
+			margin-bottom: 0.1in;
+			height: 0.4in;
+			width: 100%;
+			color: #333;
+			background-color: white;
+			box-shadow:#d0d0d0 2px 2px 2px;
+		}
+		.nav_item_unselected:hover{
+			transform: scale(1.05);
+			background-color: #eee;
+		}
+		#act_btn{
+			position: absolute;
+			height: 50px;
+			width: 50px;
+			right: 3%;
+			top: 0.5in;
+		}
+		#head_txt {
+			margin-left: 20px;
+			margin-top: 10px;
+			font-size: 0.2in;
+		}
+		#head_txt span {
+			font-size: 0.4in;
+		}
+			
+		#form_container{
+			width: 100%;
+			min-height: 100%;
+			overflow-y: scroll;
+			overflow-x: hidden;
+			box-shadow: none;
+			border: none;
+		}
+		</style>
+		
+	</head>
+	<body>
+		<div id="head_txt"><span>{{data["project_name"]}}</span><br/>项目ID:{{data["project_id"]}}</div>
+		
+		<div id="content">
+			<iframe id="form_container"></iframe>
+		</div>
+		<div id="nav">
+			<div class="nav_item" onclick="load_content('1')">
+				资产管理
+			</div>
+			<div class="nav_item_unselected" onclick="load_content('2')">
+				威胁分析
+			</div>
+			<div class="nav_item_unselected" onclick="load_content('3')">
+				脆弱性识别
+			</div>
+			<div class="nav_item_unselected" onclick="load_content('4')">
+				综合风险分析
+			</div>
+			<div class="nav_item_unselected" onclick="load_content('5')">
+				风险统计
+			</div>
+			<div class="nav_item_unselected" onclick="load_content('6')">
+				不可接受风险处理
+			</div>
+		</div>
+		
+		<script>
+		function load_content(type)
+		{
+			document.getElementsByClassName("nav_item")[0].setAttribute("class","nav_item_unselected")
+			document.getElementsByClassName("nav_item_unselected")[parseInt(type)-1].setAttribute("class","nav_item")
+			ifm = document.getElementById("form_container");
+			ifm.setAttribute("src",'/{{data["project_id"]}}/page?type='+type)
+		}
+		</script>
+	</body>
+</html>

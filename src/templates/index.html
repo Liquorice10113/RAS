@@ -1,0 +1,231 @@
+<html>
+	<head>
+		<style>
+			* {
+				padding: 0;
+				margin: 0;
+				transition: ease-in-out 0.2s;
+			}
+
+			body {
+				background-color: #333;
+			}
+
+			#center_div {
+				position: absolute;
+				margin-top: 50px;
+				width: 100%;
+				height: 600px;
+				overflow-y: hidden;
+				{% if width>1920 %}
+				overflow-x: scroll;
+				{% else %}
+				overflow-x: hidden;
+				{% endif %}
+			}
+
+			#center_div_container {
+				float: left;
+				min-width: {{ width }}px;
+			}
+
+			#head_txt {
+				margin-left: 100px;
+				margin-top: 100px;
+				font-size: 0.2in;
+				color: white;
+			}
+
+			#head_txt span {
+				font-size: 0.4in;
+			}
+
+			.project_card {
+				position: relative;
+				float: left;
+				margin-left: 100px;
+				margin-top: 50px;
+				height: 500px;
+				width: 350px;
+			}
+			.add_card {
+				user-select: none;
+				position: relative;
+				float: left;
+				text-align: center;
+				line-height: 450px;
+				margin-left: 100px;
+				margin-top: 50px;
+				height: 450px;
+				width: 350px;
+				border-radius: 0.4in;
+				border-style: solid;
+				border-width: 1.5px;
+				border-color: #d2d2d2;
+				color: #D2D2D2;
+			}
+			.add_card:hover{
+				border-color: cornflowerblue;
+				color: cornflowerblue;
+			}
+			.add_card font{
+				font-size: 1in;
+				font-weight: 50;
+			}
+			.del_btn {
+				user-select: none;
+				text-align: center;
+				line-height: 40px;
+				border-radius: 20px;
+				position: absolute;
+				bottom: 0px;
+				width: 40px;
+				height: 40px;
+				color: red;
+				font-size: 0.2in;
+				font-weight: 800;
+				background-color: white;
+				left: 50%;
+				transform: translateX(-50%);
+				box-shadow: #222 2px 2px 4px;
+			}
+
+			.del_btn:hover {
+				background-color: #FF0000;
+				color: white;
+			}
+
+			.project_card_inner {
+				height: 90%;
+				width: 100%;
+				border-radius: 0.2in;
+				box-shadow: #222 2px 2px 4px;
+				background-color: white;
+			}
+
+			.project_card_inner:hover {
+				transform: scale(1.03);
+				box-shadow: #222 8px 8px 8px;
+			}
+
+			.project_card_inner_name {
+				position: absolute;
+				top: 100px;
+				font-size: 0.4in;
+				left: 50%;
+				transform: translateX(-50%);
+			}
+
+			.project_card_inner_modi {
+				position: absolute;
+				width: 100%;
+				top: 250px;
+				font-size: 0.2in;
+				left: 10%;
+			}
+			#input_div{
+				display: none;
+				position: fixed;
+				top: 0;
+				left: 0;
+				height: 100%;
+				width: 100%;
+				background-color: rgba(0,0,0,0.2);
+			}
+			#input_div input{
+				position: fixed;
+				font-size: 0.6in;
+				height: 1in;
+				width: 4in;
+				left: 50%;
+				top: 50%;
+				transform: translate(-50%,-50%);
+			}
+			#input_div div{
+				user-select: none;
+				border-radius: 0.25in;
+				position: fixed;
+				text-align: center;
+				font-size: 0.3in;
+				line-height: 0.48in;
+				height: 0.5in;
+				width: 0.5in;
+				left: 50%;
+				top: 60%;
+				color: #6495ED;
+				transform: translate(-50%,-50%);
+				background-color: #FFFFFF;
+			}
+			#input_div div:hover{
+				background-color: #6495ED;
+				color: #FFFFFF;
+			}
+		</style>
+		<script src="/static/jquery-3.6.0.js"></script>
+		<script>
+			function enter(project_id) {
+				//alert("enter "+project_id);
+				window.open(project_id);
+			}
+			function del(project_id) {
+				$.get("/delete?id="+project_id);
+				alert("delete "+project_id);
+				window.location.reload();
+			}
+			function show_add()
+			{
+				$("#input_div").css("display","block")
+			}
+			function add()
+			{
+				
+				name_value = $("#input_value").val()
+				if(name_value)
+				{
+					$.get("/add?name="+name_value,function(data,status){
+						// alert(data['result'])
+						if(data['result']=='ok')
+						{
+							alert("新建项目成功，id为:"+data['pid'])
+							window.open("/"+data['pid']);
+							window.location.reload()
+						}
+						else{
+							alert("项目命重复！")
+						}
+					})
+				}
+				else
+				{
+					
+					alert("请输入值！");
+				}
+			}
+		</script>
+	</head>
+	<body>
+		<div id="head_txt">欢迎, <span>{{data["username"]}}</span><br/>请选择一个项目</div>
+		<div id="center_div">
+			<div id="center_div_container">
+				{% for project in data["projects"] %}
+				<div class="project_card">
+					<div class="project_card_inner" onclick="enter({{project['id']}})">
+						<div class="project_card_inner_name">
+							{{project['name']}}
+						</div>
+						<div class="project_card_inner_modi">Last modified: {{ project['modi'] }}</div>
+					</div>
+					<div class="del_btn" onclick="del({{project['id']}})">×</div>
+				</div>
+				{% endfor %}
+				<div class="add_card" onclick="show_add()">
+					<font>＋</font>
+				</div>
+			</div>
+		</div>
+		<div id="input_div">
+			<input type="text" id="input_value" />
+			<div onclick="add()">+</div>
+		</div>
+	</body>
+</html>
