@@ -9,6 +9,7 @@
 		body {
 			background-color: #fafafa;
 			overflow-y: hidden;
+			min-width: 1900px;
 		}
 		#nav{
 			user-select: none ;
@@ -17,14 +18,15 @@
 			left: 10px;
 			height: 15in;
 			width: 10%;
-			min-width: 140px;
+			min-width: 200px;
 		}
 		#content{
 			/* border-radius: 0.2in; */
 			position: absolute;
 			background-color: white;
-			left: 12%;
+			right: 0;
 			width: 88%;
+			min-width: 1650px;
 			height: 100%;
 			top: 0%;
 			overflow: hidden;
@@ -123,6 +125,7 @@
 			ifm = document.getElementById("form_container");
 			ifm.setAttribute("src",'/{{data["project_id"]}}/page?type='+type)
 		}
+		load_content(1)
 		</script>
 	</body>
 </html>

@@ -168,7 +168,7 @@
 				window.open(project_id);
 			}
 			function del(project_id) {
-				$.get("/delete?id="+project_id);
+				$.get("/del_project?id="+project_id);
 				alert("delete "+project_id);
 				window.location.reload();
 			}
@@ -182,7 +182,7 @@
 				name_value = $("#input_value").val()
 				if(name_value)
 				{
-					$.get("/add?name="+name_value,function(data,status){
+					$.get("/add_proj?name="+name_value,function(data,status){
 						// alert(data['result'])
 						if(data['result']=='ok')
 						{
@@ -213,7 +213,7 @@
 						<div class="project_card_inner_name">
 							{{project['name']}}
 						</div>
-						<div class="project_card_inner_modi">Last modified: {{ project['modi'] }}</div>
+						<div class="project_card_inner_modi">Created at:<br/> {{ project['modi'] }}</div>
 					</div>
 					<div class="del_btn" onclick="del({{project['id']}})">×</div>
 				</div>
