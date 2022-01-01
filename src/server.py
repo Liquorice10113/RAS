@@ -4,6 +4,7 @@ from sqlite3.dbapi2 import Connection, connect
 from flask import Flask, render_template, request, jsonify, send_file, Response
 from random import random
 from databaseRAS import *
+from utils import *
 import json
 #from utils import AssetsDB
 
@@ -35,44 +36,61 @@ def genRandomId():
 @app.route("/<project_id>/upload",methods=['POST'],strict_slashes=False)
 def upload(project_id):
     f = request.files['file']
+    table_type = request.args.get("tt")
     if f:
         print(f.filename)
-        f.save(upload_dir+f.filename)
-    return '<script>document;alert("ok")</script>'
+        fformat = f.filename.split('.')[-1]
+        if not fformat in ['csv','xlsx']:
+            return {'result':'failed','msg':'文件不是表格.'}
+        fn = upload_dir+'temp.'+fformat
+        f.save(fn)
+        data = []
+        if table_type == 'asset':
+            if fformat=='xlsx':
+                data = read_excel(fn)
+            elif fformat=='csv':
+                data = read_csv(fn)
+            for row in data:
+                assetDB.insert(project_id,*row)
+        return {'result':'ok','msg':'文件读取成功.'}
+    else:
+        return {'result':'failed','msg':'文件读取失败.'}
 
 @app.route("/")
 def show_project():
     data = {
         "username":"default",
-        "projects":[
-
-        ]
+        "projects":[]
     }
     for project in projectDB.query_all():
         print(project)
         name = project[0]
         id_ = project[1]
         modi = project[4]
+        desc = project[2]
         data['projects'] .append({
                     "name":name,
                     "id":id_,
-                    "modi":modi
+                    "modi":modi,
+                    "desc":desc
                 })
         id2name[id_] = name
         name2id[name] = id_
 
     return render_template("index.html",data=data,width=450*len(data['projects'])+550)
 
-@app.route("/add_proj")
+@app.route("/add_proj",methods=['POST'])
 def add_proj():
-    name = request.args.get("name")
+    data = json.loads( request.get_data(as_text=True))
+    name = data['name']
+    desc = data['desc']
     if name in name2id:
         return jsonify({"result":"dup"})
     else:
         pid = genRandomId()
         name2id[name] = pid
         id2name[pid] = name
-        projectDB.insert(name,pid,"","",time.ctime(),"")
+        projectDB.insert(name,pid,desc,"",time.ctime(),"")
         return jsonify({"result":"ok","pid":pid})
 
 @app.route("/del_project")
@@ -112,8 +130,10 @@ def add_asset_row(project_id):
     print(data)
     if not data[0]:
         return {"msg":"请输入编号!",'result':'failed'}
+    if not data[2]:
+        return {"msg":"请输入资产名称!",'result':'failed'}
     if not ( data[6] and data[7] and data[8] ):
-        return {"msg":"请输入完整性，可用性和机密性值!",'result':'failed'}
+        return {"msg":"请输入完整性，可用性和机密性!",'result':'failed'}
     
     try:
         assetDB.insert(project_id,*data)

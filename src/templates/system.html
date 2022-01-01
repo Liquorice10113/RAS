@@ -1,5 +1,6 @@
 <html>
 	<head>
+		<meta charset="utf-8" />
 		<style>
 		*{
 			padding: 0;
@@ -7,7 +8,7 @@
 			transition: ease-in-out 0.2s;
 		}
 		body {
-			background-color: #fafafa;
+			background-color: #333;
 			overflow-y: hidden;
 			min-width: 1900px;
 		}
@@ -17,20 +18,21 @@
 			top: 1in;
 			left: 10px;
 			height: 15in;
-			width: 10%;
-			min-width: 200px;
+			width: 2in;
+			min-width: 2in;
 		}
 		#content{
 			/* border-radius: 0.2in; */
 			position: absolute;
 			background-color: white;
-			right: 0;
-			width: 88%;
-			min-width: 1650px;
-			height: 100%;
-			top: 0%;
+			left: 2.3in;
+			width: 17.6in;
+			min-width: 1600px;
+			height: 99%;
+			top: 0.5%;
 			overflow: hidden;
-			box-shadow:#606060 2px 2px 4px;
+			box-shadow:#222 2px 2px 4px;
+			border-radius: 0.1in;
 		}
 		.nav_item{
 			border-radius: 5px;
@@ -43,7 +45,7 @@
 			width: 100%;
 			color: #777;
 			background-color: firebrick;
-			box-shadow:#999 2px 2px 2px;
+			box-shadow:#222 2px 2px 2px;
 			color: white;
 		}
 		.nav_item_unselected{
@@ -57,7 +59,7 @@
 			width: 100%;
 			color: #333;
 			background-color: white;
-			box-shadow:#d0d0d0 2px 2px 2px;
+			box-shadow:#222 2px 2px 2px;
 		}
 		.nav_item_unselected:hover{
 			transform: scale(1.05);
@@ -74,6 +76,7 @@
 			margin-left: 20px;
 			margin-top: 10px;
 			font-size: 0.2in;
+			color: white;
 		}
 		#head_txt span {
 			font-size: 0.4in;

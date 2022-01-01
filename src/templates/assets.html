@@ -7,6 +7,7 @@
 		*{
 			margin: 0;
 			padding: 0;
+			transition: ease-in-out 0.2s;
 		}
 		body{
 			height: 100%;
@@ -70,26 +71,28 @@
 			height: 1in;
 		}
 		#confirm{
+			font-size: 0.15in;
 			user-select: none;
-			border-radius: 0.25in;
+			border-radius: 0.05in;
 			position: fixed;
 			text-align: center;
-			line-height: 0.5in;
-			height: 0.5in;
+			line-height: 0.3in;
+			height: 0.3in;
 			width: 0.5in;
-			background-color: cornflowerblue;
+			background-color: dodgerblue;
 			color: white;
 			left: 45%;
 			top: 75%;
 			transform: translate(-50%,-50%);
 		}
 		#cancel{
+			font-size: 0.15in;
 			user-select: none;
-			border-radius: 0.25in;
+			border-radius: 0.05in;
 			position: fixed;
 			text-align: center;
-			line-height: 0.5in;
-			height: 0.5in;
+			line-height: 0.3in;
+			height: 0.3in;
 			width: 0.5in;
 			background-color: red;
 			color: white;
@@ -103,14 +106,21 @@
 			bottom: 0.3in;
 			left: 50%;
 			transform: translateX(-50%);
-			background-color: cornflowerblue;
-			color: white;
+			background-color: white;
+			color: dodgerblue;
 			height: 0.6in;
 			width: 0.6in;
-			border-radius: 0.3in;
-			line-height: 0.6in;
+			border-radius: 0.6in;
+			border-width: 0.02in;
+			border-style: solid;
+			border-color: dodgerblue;
+			line-height: 0.57in;
 			text-align: center;
 			font-size: 0.3in;
+		}
+		#add_entry_btn:hover{
+			background-color: dodgerblue;
+			color: white;
 		}
 		.table_row{
 			margin-top: 0.1in;
@@ -130,20 +140,31 @@
 			border-style: solid ;
 			border-radius: 6px;
 			border-width: 0.02in;
-			border-color: #333;
+			border-color: #ddd;
 		}
 		.table_row div:nth-child(14){
-			margin-top: 0.05in;
-			color: white;
+			overflow: visible;
+			margin-top: 0.1in;
 			float: left;
-			height: 0.3in;
-			width: 0.3in;
-			background-color: red;
-			text-align: center;
-			line-height: 0.25in;
-			border-radius: 0.15in;
-			border-style: none;
+			border-style: solid;
+			border-color: #FF0000;
 			font-size: 0.3in;
+			user-select: none;
+			text-align: center;
+			line-height: 25px;
+			border-radius: 20px;
+			bottom: 0px;
+			width: 25px;
+			height: 25px;
+			color: red;
+			font-size: 0.2in;
+			font-weight: 800;
+			background-color: white;
+		}
+		.table_row div:nth-child(14):hover{
+			color: white;
+			background-color: red;
+			border-style: solid;
 		}
 		.table_row div:nth-child(1){
 			width: 0.8in;

@@ -1,5 +1,6 @@
 <html>
 	<head>
+		<meta charset="utf-8" />
 		<style>
 			* {
 				padding: 0;
@@ -113,6 +114,7 @@
 				top: 100px;
 				font-size: 0.4in;
 				left: 50%;
+				width: 280px;
 				transform: translateX(-50%);
 			}
 
@@ -134,11 +136,20 @@
 			}
 			#input_div input{
 				position: fixed;
-				font-size: 0.6in;
-				height: 1in;
+				font-size: 0.2in;
+				height: 0.5in;
 				width: 4in;
 				left: 50%;
-				top: 50%;
+				top: 40%;
+				transform: translate(-50%,-50%);
+			}
+			#input_div textarea{
+				position: fixed;
+				font-size: 0.2in;
+				height: 2in;
+				width: 4in;
+				left: 50%;
+				top: 55%;
 				transform: translate(-50%,-50%);
 			}
 			#input_div div{
@@ -151,7 +162,7 @@
 				height: 0.5in;
 				width: 0.5in;
 				left: 50%;
-				top: 60%;
+				bottom: 10%;
 				color: #6495ED;
 				transform: translate(-50%,-50%);
 				background-color: #FFFFFF;
@@ -159,6 +170,14 @@
 			#input_div div:hover{
 				background-color: #6495ED;
 				color: #FFFFFF;
+			}
+			.desc{
+				position: absolute;
+				height: auto;
+				width: 290px;
+				top: 180px;
+				left: 35px;
+				color: #666;
 			}
 		</style>
 		<script src="/static/jquery-3.6.0.js"></script>
@@ -180,14 +199,18 @@
 			{
 				
 				name_value = $("#input_value").val()
+				desc_value = $("#input_desc").val()
+				data = {
+					"name":name_value,
+					"desc":desc_value
+				}
 				if(name_value)
 				{
-					$.get("/add_proj?name="+name_value,function(data,status){
+					$.post("/add_proj", JSON.stringify(data) ,function(data,status){
 						// alert(data['result'])
 						if(data['result']=='ok')
 						{
 							alert("新建项目成功，id为:"+data['pid'])
-							window.open("/"+data['pid']);
 							window.location.reload()
 						}
 						else{
@@ -204,7 +227,7 @@
 		</script>
 	</head>
 	<body>
-		<div id="head_txt">欢迎, <span>{{data["username"]}}</span><br/>请选择一个项目</div>
+		<div id="head_txt">欢迎, <span>{{data["username"]}}</span><br/>请选择或新建一个项目</div>
 		<div id="center_div">
 			<div id="center_div_container">
 				{% for project in data["projects"] %}
@@ -212,6 +235,9 @@
 					<div class="project_card_inner" onclick="enter({{project['id']}})">
 						<div class="project_card_inner_name">
 							{{project['name']}}
+						</div>
+						<div class="desc">
+							{{project['desc']}}
 						</div>
 						<div class="project_card_inner_modi">Created at:<br/> {{ project['modi'] }}</div>
 					</div>
@@ -224,7 +250,8 @@
 			</div>
 		</div>
 		<div id="input_div">
-			<input type="text" id="input_value" />
+			<input type="text" id="input_value" placeholder="请输入项目名称" />
+			<textarea id="input_desc">请输入项目描述。</textarea>
 			<div onclick="add()">+</div>
 		</div>
 	</body>
