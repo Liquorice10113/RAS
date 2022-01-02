@@ -16,7 +16,7 @@ upload_dir = './upload/'
 
 connection = Database()
 assetDB = Asset(connection)
-ftragilityDB = Fragility(connection)
+fragilityDB = Fragility(connection)
 threatDB = Threat(connection)
 projectDB = Project(connection)
 
@@ -29,6 +29,13 @@ for project in projectDB.query_all():
         id2name[id_] = name
         name2id[name] = id_
 
+def js(s):
+    return '''<script>
+    {0};
+    window.opener = null;
+    window.open('', '_self');
+    window.close();
+    </script>'''.format(s)
 
 def genRandomId():
     return str(int(random()*10e6))
@@ -41,20 +48,29 @@ def upload(project_id):
         print(f.filename)
         fformat = f.filename.split('.')[-1]
         if not fformat in ['csv','xlsx']:
-            return {'result':'failed','msg':'文件不是表格.'}
+            return js("alert('不是表格！')")
         fn = upload_dir+'temp.'+fformat
         f.save(fn)
         data = []
-        if table_type == 'asset':
+        try:                
             if fformat=='xlsx':
                 data = read_excel(fn)
             elif fformat=='csv':
                 data = read_csv(fn)
-            for row in data:
-                assetDB.insert(project_id,*row)
-        return {'result':'ok','msg':'文件读取成功.'}
+            if table_type == 'asset':
+                for row in data:
+                    assetDB.insert(project_id,*row)
+            elif table_type == 'thread':
+                for row in data:
+                    threatDB.insert(*row)
+            elif table_type == 'fragility':
+                for row in data:
+                    fragilityDB.insert(*row)
+        except Exception as e:
+            return js("alert('错误:" + str(e) + "')")
+        return js("alert('文件读取成功.')")
     else:
-        return {'result':'failed','msg':'文件读取失败.'}
+        return js("alert('不是表格！')")
 
 @app.route("/")
 def show_project():

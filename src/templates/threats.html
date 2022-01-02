@@ -1,0 +1,364 @@
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<title></title>
+		<script src="/static/jquery-3.6.0.js"></script>
+		<style>
+		*{
+			margin: 0;
+			padding: 0;
+			transition: ease-in-out 0.2s;
+		}
+		body{
+			height: 100%;
+			width: 100%;
+			min-width: 1650px;
+		}
+
+		.table{
+			position: relative;
+			align-content: center;
+			text-align: center;
+		}
+		#add_entry_cover{
+			display: none;
+			position: fixed;
+			height: 100%;
+			width: 100%;
+			left: 0;
+			top: 0;
+			background-color: rgba(0,0,0,0.2);
+		}
+		#add_file_cover{
+			display: none;
+			position: fixed;
+			height: 100%;
+			width: 100%;
+			left: 0;
+			top: 0;
+			background-color: rgba(0,0,0,0.2);
+		}
+		#add_entry{
+			padding-top: 0.2in;
+			border-radius: 5px;
+			position: fixed;
+			height: 6in;
+			width: 4in;
+			background-color: white;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%,-50%);
+			overflow-x: hidden;
+			overflow-y: hidden;
+		}
+		#add_file{
+			padding-top: 0.2in;
+			border-radius: 5px;
+			position: fixed;
+			height: 1in;
+			width: 4in;
+			background-color: white;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%,-50%);
+			overflow-x: hidden;
+			overflow-y: hidden;
+		}
+		.input_row{
+			position: relative;
+			width: 3in;
+			height: auto;
+			min-height: 0.2in;
+			margin-left: 0.5in;
+			margin-top: 0.05in;
+			margin-bottom: 0.1in;
+		}
+		.input_row div{
+			position: absolute;
+			left: 0;
+		}
+		.input_row input{
+			position: absolute;
+			top: 0.05in;
+			right: 0;
+		}
+		.input_row:nth-child(6){
+			height: 1in;
+		}
+		.input_row textarea{
+			position: absolute;
+			width: 1.8in;
+			top: 0.05in;
+			right: 0;
+			height: 1in;
+		}
+		.confirm{
+			font-size: 0.15in;
+			user-select: none;
+			border-radius: 0.05in;
+			position: fixed;
+			text-align: center;
+			line-height: 0.3in;
+			height: 0.3in;
+			width: 0.5in;
+			background-color: dodgerblue;
+			color: white;
+			left: 45%;
+			top: 75%;
+			transform: translate(-50%,-50%);
+		}
+		.cancel{
+			font-size: 0.15in;
+			user-select: none;
+			border-radius: 0.05in;
+			position: fixed;
+			text-align: center;
+			line-height: 0.3in;
+			height: 0.3in;
+			width: 0.5in;
+			background-color: red;
+			color: white;
+			left: 55%;
+			top: 75%;
+			transform: translate(-50%,-50%);
+		}
+		#add_entry_btn{
+			user-select: none;
+			position: fixed;
+			bottom: 0.3in;
+			left: 50%;
+			transform: translateX(-50%);
+			background-color: white;
+			color: dodgerblue;
+			height: 0.6in;
+			width: 0.6in;
+			border-radius: 0.6in;
+			border-width: 0.02in;
+			border-style: solid;
+			border-color: dodgerblue;
+			line-height: 0.57in;
+			text-align: center;
+			font-size: 0.3in;
+		}
+		#add_entry_btn:hover{
+			background-color: dodgerblue;
+			color: white;
+		}
+		#add_file_btn{
+			user-select: none;
+			position: fixed;
+			bottom: 0.3in;
+			right: 10%;
+			transform: translateX(-50%);
+			background-color: white;
+			color: darkgreen;
+			height: 0.6in;
+			width: 0.6in;
+			border-radius: 0.6in;
+			border-width: 0.02in;
+			border-style: solid;
+			border-color: darkgreen;
+			line-height: 0.57in;
+			text-align: center;
+			font-size: 0.2in;
+		}
+		#add_file_btn:hover{
+			background-color: darkgreen;
+			color: white;
+		}
+		
+		.table_row{
+			margin-top: 0.1in;
+			float: left;
+			height: 0.5in;
+			overflow-y: hidden;
+			overflow-x: hidden;
+		}
+		.table_row div{
+			line-height: 0.46in;
+			text-align: center;
+			float: left;
+			height: 0.46in;
+			margin-left: 0.1in;
+			width: 0.8in;
+			background-color: white;
+			border-style: solid ;
+			border-radius: 6px;
+			border-width: 0.02in;
+			border-color: #ddd;
+		}
+		.table_row div:nth-child(14){
+			overflow: visible;
+			margin-top: 0.1in;
+			float: left;
+			border-style: solid;
+			border-color: #FF0000;
+			font-size: 0.3in;
+			user-select: none;
+			text-align: center;
+			line-height: 25px;
+			border-radius: 20px;
+			bottom: 0px;
+			width: 25px;
+			height: 25px;
+			color: red;
+			font-size: 0.2in;
+			font-weight: 800;
+			background-color: white;
+		}
+		.table_row div:nth-child(14):hover{
+			color: white;
+			background-color: red;
+			border-style: solid;
+		}
+		.table_row div:nth-child(1){
+			width: 0.8in;
+		}
+		.table_row div:nth-child(2){
+			width: 1.2in;
+		}
+		.table_row div:nth-child(3){
+			width: 1.6in;
+		}
+		.table_row div:nth-child(4){
+			width: 0.8in;
+		}
+		.table_row div:nth-child(5){
+			width: 2.8in;
+		}
+		.table_row div:nth-child(6){
+			width: 1in;
+		}
+		.table_row div:nth-child(7){
+			width: 0.6in;
+		}
+		.table_row div:nth-child(8){
+			width: 0.6in;
+		}
+		.table_row div:nth-child(9){
+			width: 0.6in;
+		}
+		.table_row div:nth-child(10){
+			width: 0.8in;
+		}
+		.table_row div:nth-child(11){
+			width: 1.5in;
+		}
+		.table_row div:nth-child(12){
+			width: 0.8in;
+		}
+		.table_row div:nth-child(13){
+			width: 1.5in;
+		}
+		#headers div{
+			background-color: #333333;
+			color: white;
+		}
+		</style>
+		<script>
+		function input_row(){
+			asset_name = $("#asset_name").val()
+			asset_id = $("#asset_id").val()
+			asset_type = $("#asset_type").val()
+			mgr = $("#mgr").val()
+			asset_desc = $("#asset_desc").val()
+			aprt = $("#aprt").val()
+			intr = $("#intr").val()
+			aval = $("#aval").val()
+			conf = $("#conf").val()
+			isHW = $("#isHW").is(':checked')
+			HW_storage = $("#HW_storage").val()
+			isSW = $("#isSW:checkbox").is(':checked')
+			SW_storage = $("#SW_storage").val()
+			data = [asset_id, asset_type,asset_name, mgr, asset_desc, aprt, intr, aval, conf, isHW, HW_storage, isSW, SW_storage]
+			$.post("/{{data['project_id']}}/add_asset_row",JSON.stringify(data),function(data){
+				alert(data['msg']);
+				if(data['result']=='ok')
+					window.location.reload();
+			} )
+			console.log(data)
+			
+		}
+		function cancel_input(){
+			// $("#add_entry_cover").css("display","none")
+			window.location.reload()
+		}
+		function show_input(){
+			$("#add_entry_cover").css("display","block")
+		}
+		function shwo_file_upload(){
+			$("#add_file_cover").css("display","block")
+		}
+		function assets_del_row(asset_id){
+			$.post("/{{data['project_id']}}/delete_asset_row",JSON.stringify({"asset_id":asset_id}),function(data){
+				alert(data['msg']);
+				if(data['result']=='ok')
+					window.location.reload();
+			} )
+		}
+		function file_upload(){
+			$("#upload_form").submit();
+			window.location.reload();
+		}
+		</script>
+	</head>
+	<body>
+		<div class="table">
+			<div class="table_row" id="headers">
+				<div>资产编号</div>
+				<div>资产类型</div>
+				<div>资产名称</div>
+				<div>负责人</div>
+				<div>描述</div>
+				<div>部门</div>
+				<div>完整性</div>
+				<div>可用性</div>
+				<div>机密性</div>
+				<div>是否硬件</div>
+				<div>硬件存放方式</div>
+				<div>是否软件</div>
+				<div>软件存放方式</div>
+			</div>
+			{% for row in data['data'] %}
+			<div class="table_row">
+				{% for v in row %}
+				<div> {{v}} </div>
+				{% endfor %}
+				<div class="delrow" onclick="assets_del_row({{row[0]}})">-</div>
+			</div>
+			{% endfor %}
+		</div>
+		<div id="add_entry_btn" onclick="show_input()">+</div>
+		<div id="add_file_btn" onclick="shwo_file_upload()">上传</div>
+		<div id="add_entry_cover">
+			<div id="add_entry">
+			<div style="width: 100%;text-align: center;font-size: 0.2in;">请录入数据</div>
+				<div class="input_row"><div>资产名称:</div><input id="asset_name" /></div>
+				<div class="input_row"><div>资产编号:</div><input id="asset_id" type="number"/></div>
+				<div class="input_row"><div>资产类型:</div><input id="asset_type" /></div>
+				<div class="input_row"><div>负责人:</div><input id="mgr" /></div>
+				<div class="input_row"><div>描述:</div><textarea id="asset_desc" ></textarea></div>
+				<div class="input_row"><div>部门:</div><input id="aprt" /></div>
+				<div class="input_row"><div>完整性:</div><input id="intr" type="number" /></div>
+				<div class="input_row"><div>可用性:</div><input id="aval" type="number"/></div>
+				<div class="input_row"><div>机密性:</div><input id="conf" type="number"/></div>
+				<div class="input_row"><div>是否硬件:</div><input id="isHW" type="checkbox"/></div>
+				<div class="input_row"><div>硬件存放方式:</div><input id="HW_storage" /></div>
+				<div class="input_row"><div>是否软件:</div><input id="isSW" type="checkbox"/></div>
+				<div class="input_row"><div>软件存放方式:</div><input id="SW_storage" /></div>
+			</div>
+			<div class="confirm" onclick="input_row()">确定</div>
+			<div class="cancel" onclick="cancel_input()">取消</div>
+		</div>
+		<iframe id="dummy" style="display: none;"></iframe>
+		<div id="add_file_cover">
+			<div id="add_file">
+				<form id="upload_form" method="post" target="dummy" action="/{{data['project_id']}}/upload?tt=asset" enctype="multipart/form-data">
+					<input id="input_file" type="file" name="file" />
+				</form>
+			</div>
+			<div class="confirm" onclick="file_upload()">确定</div>
+			<div class="cancel" onclick="cancel_input()">取消</div>
+		</div>
+	</body>
+</html>

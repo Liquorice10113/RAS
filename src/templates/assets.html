@@ -29,11 +29,33 @@
 			top: 0;
 			background-color: rgba(0,0,0,0.2);
 		}
+		#add_file_cover{
+			display: none;
+			position: fixed;
+			height: 100%;
+			width: 100%;
+			left: 0;
+			top: 0;
+			background-color: rgba(0,0,0,0.2);
+		}
 		#add_entry{
 			padding-top: 0.2in;
 			border-radius: 5px;
 			position: fixed;
 			height: 6in;
+			width: 4in;
+			background-color: white;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%,-50%);
+			overflow-x: hidden;
+			overflow-y: hidden;
+		}
+		#add_file{
+			padding-top: 0.2in;
+			border-radius: 5px;
+			position: fixed;
+			height: 1in;
 			width: 4in;
 			background-color: white;
 			top: 50%;
@@ -70,7 +92,7 @@
 			right: 0;
 			height: 1in;
 		}
-		#confirm{
+		.confirm{
 			font-size: 0.15in;
 			user-select: none;
 			border-radius: 0.05in;
@@ -85,7 +107,7 @@
 			top: 75%;
 			transform: translate(-50%,-50%);
 		}
-		#cancel{
+		.cancel{
 			font-size: 0.15in;
 			user-select: none;
 			border-radius: 0.05in;
@@ -122,6 +144,29 @@
 			background-color: dodgerblue;
 			color: white;
 		}
+		#add_file_btn{
+			user-select: none;
+			position: fixed;
+			bottom: 0.3in;
+			right: 10%;
+			transform: translateX(-50%);
+			background-color: white;
+			color: darkgreen;
+			height: 0.6in;
+			width: 0.6in;
+			border-radius: 0.6in;
+			border-width: 0.02in;
+			border-style: solid;
+			border-color: darkgreen;
+			line-height: 0.57in;
+			text-align: center;
+			font-size: 0.2in;
+		}
+		#add_file_btn:hover{
+			background-color: darkgreen;
+			color: white;
+		}
+		
 		.table_row{
 			margin-top: 0.1in;
 			float: left;
@@ -240,7 +285,9 @@
 		}
 		function show_input(){
 			$("#add_entry_cover").css("display","block")
-			
+		}
+		function shwo_file_upload(){
+			$("#add_file_cover").css("display","block")
 		}
 		function assets_del_row(asset_id){
 			$.post("/{{data['project_id']}}/delete_asset_row",JSON.stringify({"asset_id":asset_id}),function(data){
@@ -248,6 +295,10 @@
 				if(data['result']=='ok')
 					window.location.reload();
 			} )
+		}
+		function file_upload(){
+			$("#upload_form").submit();
+			window.location.reload();
 		}
 		</script>
 	</head>
@@ -278,6 +329,7 @@
 			{% endfor %}
 		</div>
 		<div id="add_entry_btn" onclick="show_input()">+</div>
+		<div id="add_file_btn" onclick="shwo_file_upload()">上传</div>
 		<div id="add_entry_cover">
 			<div id="add_entry">
 			<div style="width: 100%;text-align: center;font-size: 0.2in;">请录入数据</div>
@@ -295,9 +347,18 @@
 				<div class="input_row"><div>是否软件:</div><input id="isSW" type="checkbox"/></div>
 				<div class="input_row"><div>软件存放方式:</div><input id="SW_storage" /></div>
 			</div>
-			<div id="confirm" onclick="input_row()">确定</div>
-			<div id="cancel" onclick="cancel_input()">取消</div>
+			<div class="confirm" onclick="input_row()">确定</div>
+			<div class="cancel" onclick="cancel_input()">取消</div>
 		</div>
-		<div id="dummy"></div>
+		<iframe id="dummy" style="display: none;"></iframe>
+		<div id="add_file_cover">
+			<div id="add_file">
+				<form id="upload_form" method="post" target="dummy" action="/{{data['project_id']}}/upload?tt=asset" enctype="multipart/form-data">
+					<input id="input_file" type="file" name="file" />
+				</form>
+			</div>
+			<div class="confirm" onclick="file_upload()">确定</div>
+			<div class="cancel" onclick="cancel_input()">取消</div>
+		</div>
 	</body>
 </html>
