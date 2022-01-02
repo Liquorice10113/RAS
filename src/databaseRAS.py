@@ -58,6 +58,7 @@ class Database:
 
 class Asset:
     def __init__(self,connection):
+        self.count = 0
         self.db = connection
         sql = """CREATE TABLE IF NOT EXISTS asset
                (project_id     INT    NOT NULL,                
@@ -84,56 +85,74 @@ class Asset:
                VALUES ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', '{11}', '{12}', '{13}')''' .format(
                project_id, asset_id, asset_type, asset_name, mgr, asset_desc, dept, intr, aval, conf, isHW, HW_storage, isSW, SW_storage)
         self.db.execute(sql);
-    def query(self, project_id):
-        sql = "SELECT * FROM asset WHERE project_id = {0}".format(project_id)
-        return self.db.query(sql);
+    def query(self, parm):
+        sql = "SELECT * FROM asset WHERE {0} = {1}".format(*parm)
+        data = self.db.query(sql);
+        self.count = len(data)
+        return data
     def delete(self,asset_id):
         sql = '''DELETE FROM asset WHERE asset_id = '{0}' '''.format(asset_id)
         self.db.execute(sql);
 
-class Fragility:
+class Vulnerability:
     def __init__(self,connection):
+        self.count = 0
         self.db = connection
-        sql = """CREATE TABLE IF NOT EXISTS  fragility
-               (vul_id           INT    PRIMARY KEY   NOT NULL,                
+        sql = """CREATE TABLE IF NOT EXISTS  vulnerability
+               (project_id       INT NOT NULL,
+               vul_id           INT    PRIMARY KEY   NOT NULL,                
                vul_name         CHAR(50)   NOT NULL,
                vul_desc         CHAR(200), 
                vul_level        INT,
                thrt_id          INT)"""
         self.db.execute(sql);
 
-    def insert(self, vul_id, vul_name, vul_desc, vul_level, thrt_id):
-        sql = '''INSERT INTO fragility(vul_id, vul_name, vul_desc, vul_level, thrt_id)
-               VALUES ('{0}', '{1}', '{2}', '{3}',  '{4}')'''.format( vul_id, vul_name, vul_desc, vul_level, thrt_id)
+    def insert(self,project_id, vul_id, vul_name, vul_desc, vul_level, thrt_id):
+        sql = '''INSERT INTO vulnerability(project_id, vul_id, vul_name, vul_desc, vul_level, thrt_id)
+               VALUES ('{0}', '{1}', '{2}', '{3}',  '{4}',  '{5}')'''.format(project_id, vul_id, vul_name, vul_desc, vul_level, thrt_id)
         self.db.execute(sql);
 
-    def query(self, vul_id):
-        sql = "SELECT * FROM fragility WHERE vul_id = {0}".format(vul_id)
-        return self.db.query(sql);
+    def query(self, parm):
+        sql = "SELECT * FROM vulnerability WHERE {0} = {1}".format(*parm)
+        data = self.db.query(sql);
+        self.count = len(data)
+        return data
+
+    def delete(self, vul_id):
+        sql = '''DELETE FROM vulnerability WHERE vul_id = '{0}' '''.format(vul_id)
+        self.db.query(sql)
 
 class Threat:
     def __init__(self,connection):
+        self.count = 0
         self.db = connection
         sql = """CREATE TABLE IF NOT EXISTS  threat
-               (thrt_id          INT        PRIMARY KEY   NOT NULL,                
+               (
+                project_id       INT NOT NULL,
+                thrt_id          INT        PRIMARY KEY   NOT NULL,                
                asset_id          INT        NOT NULL,
                thrt_desc        CHAR(200), 
                thrt_freq        INT)"""
         self.db.execute(sql);
 
-    def insert(self,  thrt_id, asset_id, thrt_desc, thrt_freq):
-        sql = '''INSERT INTO threat( thrt_id, asset_id, thrt_desc, thrt_freq)
-               VALUES ('{0}', '{1}', '{2}', '{3}')'''.format( thrt_id, asset_id, thrt_desc, thrt_freq)
+    def insert(self, project_id,  thrt_id, asset_id, thrt_desc, thrt_freq):
+        sql = '''INSERT INTO threat( project_id, thrt_id, asset_id, thrt_desc, thrt_freq)
+               VALUES ('{0}', '{1}', '{2}', '{3}', '{4}')'''.format( project_id, thrt_id, asset_id, thrt_desc, thrt_freq)
         self.db.execute(sql);
         print("插入数据成功")
 
-    def query(self, thrt_id):
-        sql = "SELECT * FROM threat WHERE thrt_id = {0}" .format(thrt_id)
-        return self.db.query(sql);
-
+    def query(self, parm):
+        sql = "SELECT * FROM threat WHERE {0} = {1}".format(*parm)
+        data = self.db.query(sql);
+        self.count = len(data)
+        return data
+    def delete(self, thrt_id):
+        sql = '''DELETE FROM threat WHERE thrt_id = '{0}' '''.format(thrt_id)
+        self.db.query(sql)
 
 class Project:
     def __init__(self,connection):
+        self.count = 0
         self.db = connection
         sql = """CREATE TABLE IF NOT EXISTS  project
                (project_name     CHAR(50)    NOT NULL,                
@@ -150,16 +169,20 @@ class Project:
         self.db.execute(sql);
         print("插入数据成功")
 
-    def query(self, project_id):
-        sql = "SELECT * FROM project WHERE project_id = {0}".format(project_id)
+    def query(self, parm):
+        sql = "SELECT * FROM project WHERE {0} = {1}".format(*parm)
         return self.db.query(sql);
 
     def query_all(self):
         sql = "SELECT * FROM project"
-        return self.db.query(sql);
+        data = self.db.query(sql);
+        self.count = len(data)
+        return data
 
     def delete(self,pid):
         sql = '''DELETE FROM project WHERE project_id = '{0}' '''.format(pid)
         self.db.query(sql)
         sql = '''DELETE FROM asset WHERE project_id = '{0}' '''.format(pid)
+        self.db.query(sql)
+        sql = '''DELETE FROM threat WHERE project_id = '{0}' '''.format(pid)
         self.db.query(sql)

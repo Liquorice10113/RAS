@@ -187,7 +187,7 @@
 			border-width: 0.02in;
 			border-color: #ddd;
 		}
-		.table_row div:nth-child(14){
+		.table_row div:nth-child(5){
 			overflow: visible;
 			margin-top: 0.1in;
 			float: left;
@@ -206,7 +206,7 @@
 			font-weight: 800;
 			background-color: white;
 		}
-		.table_row div:nth-child(14):hover{
+		.table_row div:nth-child(5):hover{
 			color: white;
 			background-color: red;
 			border-style: solid;
@@ -223,33 +223,6 @@
 		.table_row div:nth-child(4){
 			width: 0.8in;
 		}
-		.table_row div:nth-child(5){
-			width: 2.8in;
-		}
-		.table_row div:nth-child(6){
-			width: 1in;
-		}
-		.table_row div:nth-child(7){
-			width: 0.6in;
-		}
-		.table_row div:nth-child(8){
-			width: 0.6in;
-		}
-		.table_row div:nth-child(9){
-			width: 0.6in;
-		}
-		.table_row div:nth-child(10){
-			width: 0.8in;
-		}
-		.table_row div:nth-child(11){
-			width: 1.5in;
-		}
-		.table_row div:nth-child(12){
-			width: 0.8in;
-		}
-		.table_row div:nth-child(13){
-			width: 1.5in;
-		}
 		#headers div{
 			background-color: #333333;
 			color: white;
@@ -257,21 +230,12 @@
 		</style>
 		<script>
 		function input_row(){
-			asset_name = $("#asset_name").val()
+			threat_id = $("#threat_id").val()
 			asset_id = $("#asset_id").val()
-			asset_type = $("#asset_type").val()
-			mgr = $("#mgr").val()
-			asset_desc = $("#asset_desc").val()
-			aprt = $("#aprt").val()
-			intr = $("#intr").val()
-			aval = $("#aval").val()
-			conf = $("#conf").val()
-			isHW = $("#isHW").is(':checked')
-			HW_storage = $("#HW_storage").val()
-			isSW = $("#isSW:checkbox").is(':checked')
-			SW_storage = $("#SW_storage").val()
-			data = [asset_id, asset_type,asset_name, mgr, asset_desc, aprt, intr, aval, conf, isHW, HW_storage, isSW, SW_storage]
-			$.post("/{{data['project_id']}}/add_asset_row",JSON.stringify(data),function(data){
+			threat_desc = $("#threat_desc").val()
+			freq = $("#freq").val()
+			data = [threat_id,asset_id,threat_desc,freq]
+			$.post("/{{data['project_id']}}/add_threat_row",JSON.stringify(data),function(data){
 				alert(data['msg']);
 				if(data['result']=='ok')
 					window.location.reload();
@@ -289,8 +253,8 @@
 		function shwo_file_upload(){
 			$("#add_file_cover").css("display","block")
 		}
-		function assets_del_row(asset_id){
-			$.post("/{{data['project_id']}}/delete_asset_row",JSON.stringify({"asset_id":asset_id}),function(data){
+		function threats_del_row(threat_id){
+			$.post("/{{data['project_id']}}/delete_threat_row",JSON.stringify({"threat_id":threat_id}),function(data){
 				alert(data['msg']);
 				if(data['result']=='ok')
 					window.location.reload();
@@ -298,33 +262,39 @@
 		}
 		function file_upload(){
 			$("#upload_form").submit();
-			window.location.reload();
+			setTimeout( function(){window.location.reload()} ,1000 );
 		}
 		</script>
 	</head>
 	<body>
 		<div class="table">
 			<div class="table_row" id="headers">
-				<div>资产编号</div>
-				<div>资产类型</div>
-				<div>资产名称</div>
-				<div>负责人</div>
+				<div>威胁编号</div>
+				<div>所属资产编号</div>
 				<div>描述</div>
-				<div>部门</div>
-				<div>完整性</div>
-				<div>可用性</div>
-				<div>机密性</div>
-				<div>是否硬件</div>
-				<div>硬件存放方式</div>
-				<div>是否软件</div>
-				<div>软件存放方式</div>
+				<div>发生频率</div>
+				<div style="opacity: 0;"></div>
+			</div>
+			<div class="table_row" id="headers">
+				<div>威胁编号</div>
+				<div>所属资产编号</div>
+				<div>描述</div>
+				<div>发生频率</div>
+				<div style="opacity: 0;"></div>
+			</div>
+			<div class="table_row" id="headers">
+				<div>威胁编号</div>
+				<div>所属资产编号</div>
+				<div>描述</div>
+				<div>发生频率</div>
+				<div style="opacity: 0;"></div>
 			</div>
 			{% for row in data['data'] %}
 			<div class="table_row">
 				{% for v in row %}
 				<div> {{v}} </div>
 				{% endfor %}
-				<div class="delrow" onclick="assets_del_row({{row[0]}})">-</div>
+				<div class="delrow" onclick="threats_del_row('{{row[0]}}')">-</div>
 			</div>
 			{% endfor %}
 		</div>
@@ -333,19 +303,10 @@
 		<div id="add_entry_cover">
 			<div id="add_entry">
 			<div style="width: 100%;text-align: center;font-size: 0.2in;">请录入数据</div>
-				<div class="input_row"><div>资产名称:</div><input id="asset_name" /></div>
-				<div class="input_row"><div>资产编号:</div><input id="asset_id" type="number"/></div>
-				<div class="input_row"><div>资产类型:</div><input id="asset_type" /></div>
-				<div class="input_row"><div>负责人:</div><input id="mgr" /></div>
-				<div class="input_row"><div>描述:</div><textarea id="asset_desc" ></textarea></div>
-				<div class="input_row"><div>部门:</div><input id="aprt" /></div>
-				<div class="input_row"><div>完整性:</div><input id="intr" type="number" /></div>
-				<div class="input_row"><div>可用性:</div><input id="aval" type="number"/></div>
-				<div class="input_row"><div>机密性:</div><input id="conf" type="number"/></div>
-				<div class="input_row"><div>是否硬件:</div><input id="isHW" type="checkbox"/></div>
-				<div class="input_row"><div>硬件存放方式:</div><input id="HW_storage" /></div>
-				<div class="input_row"><div>是否软件:</div><input id="isSW" type="checkbox"/></div>
-				<div class="input_row"><div>软件存放方式:</div><input id="SW_storage" /></div>
+				<div class="input_row"><div>威胁编号:</div><input id="threat_id" type="number"/></div>
+				<div class="input_row"><div>所属资产编号:</div><input id="asset_id" type="number"/></div>
+				<div class="input_row"><div>描述:</div><input id="threat_desc" /></div>
+				<div class="input_row"><div>发生频率:</div><input id="freq" /></div>
 			</div>
 			<div class="confirm" onclick="input_row()">确定</div>
 			<div class="cancel" onclick="cancel_input()">取消</div>
@@ -353,7 +314,7 @@
 		<iframe id="dummy" style="display: none;"></iframe>
 		<div id="add_file_cover">
 			<div id="add_file">
-				<form id="upload_form" method="post" target="dummy" action="/{{data['project_id']}}/upload?tt=asset" enctype="multipart/form-data">
+				<form id="upload_form" method="post" target="dummy" action="/{{data['project_id']}}/upload?tt=threat" enctype="multipart/form-data">
 					<input id="input_file" type="file" name="file" />
 				</form>
 			</div>

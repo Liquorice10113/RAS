@@ -12,13 +12,12 @@ app = Flask(__name__)
 
 upload_dir = './upload/'
 
-#assetsDB = AssetsDB()
-
 connection = Database()
 assetDB = Asset(connection)
-fragilityDB = Fragility(connection)
+vulDB = Vulnerability(connection)
 threatDB = Threat(connection)
 projectDB = Project(connection)
+
 
 id2name = dict()
 name2id = dict()
@@ -60,12 +59,12 @@ def upload(project_id):
             if table_type == 'asset':
                 for row in data:
                     assetDB.insert(project_id,*row)
-            elif table_type == 'thread':
+            elif table_type == 'threat':
                 for row in data:
-                    threatDB.insert(*row)
-            elif table_type == 'fragility':
+                    threatDB.insert(project_id,*row)
+            elif table_type == 'vulnerability':
                 for row in data:
-                    fragilityDB.insert(*row)
+                    vulDB.insert(project_id,*row)
         except Exception as e:
             return js("alert('错误:" + str(e) + "')")
         return js("alert('文件读取成功.')")
@@ -140,6 +139,15 @@ def delete_asset_row(project_id):
         return {"msg":"错误:"+str(e),'result':'failed'}
     return {"msg":"成功",'result':'ok'}
 
+@app.route("/<project_id>/delete_threat_row",methods=['POST'])
+def delete_threat_row(project_id):
+    data = json.loads( request.get_data(as_text=True))
+    try:
+        threatDB.delete(data['threat_id'])
+    except Exception as e:
+        return {"msg":"错误:"+str(e),'result':'failed'}
+    return {"msg":"成功",'result':'ok'}
+
 @app.route("/<project_id>/add_asset_row",methods=['POST'])
 def add_asset_row(project_id):
     data = json.loads( request.get_data(as_text=True))
@@ -157,35 +165,90 @@ def add_asset_row(project_id):
         return {"msg":"错误:"+str(e),'result':'failed'}
     return {"msg":"成功",'result':'ok'}
 
+@app.route("/<project_id>/add_threat_row",methods=['POST'])
+def add_threat_row(project_id):
+    data = json.loads( request.get_data(as_text=True))
+    print(data)
+    if not data[0]:
+        return {"msg":"请输入编号!",'result':'failed'}
+    if not data[1]:
+        return {"msg":"请输入资产编号!",'result':'failed'}
+    
+    try:
+        threatDB.insert(project_id,*data)
+    except Exception as e:
+        return {"msg":"错误:"+str(e),'result':'failed'}
+    return {"msg":"成功",'result':'ok'}
+
+@app.route("/<project_id>/add_vul_row",methods=['POST'])
+def add_vul_row(project_id):
+    data = json.loads( request.get_data(as_text=True))
+    print(data)
+    if not data[0]:
+        return {"msg":"请输入编号!",'result':'failed'}
+    if not data[-1]:
+        return {"msg":"请输入所属威胁编号!",'result':'failed'}
+    try:
+        vulDB.insert(project_id,*data)
+    except Exception as e:
+        return {"msg":"错误:"+str(e),'result':'failed'}
+    return {"msg":"成功",'result':'ok'}
+
 @app.route("/<project_id>/page")
 def page(project_id):
     resp = ''
     if request.args.get('type') =='1':
         return getAssets(project_id)
     elif request.args.get('type') =='2':
-        resp = "威胁分析"    
+        return getThreats(project_id)  
     elif request.args.get('type') =='3':
-        resp = "脆弱性识别"
+        return getVuls(project_id)  
     elif request.args.get('type') =='4':
-        resp = "综合风险分析"
+        getReport(project_id)
+        return render_template('report.html',project_id=project_id)
     elif request.args.get('type') =='5':
         resp = "风险统计"
     elif request.args.get('type') =='6':
         resp = "不可接受风险处理"
     return resp
 
+@app.route("/<project_id>/report")
+def report_pdf(project_id):
+    return getReport(project_id)
+
 def getAssets(project_id):
     #assets = assetsDB.query(pid=project_id)
     assets = dict()
     assets['project_id'] = project_id
-    assets['data'] = [
-        #[1,2,3,4,5,6,7,8,9,10,11,12,13] for _ in range(80)
-        #[1,2,3,4,5,6,7,8]
-        ]
-    for asset in assetDB.query(project_id):
+    assets['data'] = []
+    for asset in assetDB.query(['project_id',project_id]):
         assets['data'].append(asset[1:])
-    
     return render_template("assets.html",data=assets)
 
+def getThreats(project_id):
+    #assets = assetsDB.query(pid=project_id)
+    threats = dict()
+    threats['project_id'] = project_id
+    threats['data'] = []
+    for threat in threatDB.query(['project_id',project_id]):
+        threats['data'].append(threat[1:])
+    return render_template("threats.html",data=threats)
+
+def getVuls(project_id):
+    #assets = assetsDB.query(pid=project_id)
+    vuls = dict()
+    vuls['project_id'] = project_id
+    vuls['data'] = []
+    for vul in vulDB.query(['project_id',project_id]):
+        vuls['data'].append(vul[1:])
+    return render_template("vulnerabilities.html",data=vuls)
+
+def getReport(project_id):
+    R = Report(assetDB,threatDB,vulDB,project_id)
+    data = R.getReport()
+    print(data)
+    #format_report(data)
+    #return send_file("test.pdf",as_attachment=False,mimetype="application/pdf")
+    return format_report(data)
 
 app.run(debug=True)
