@@ -44,8 +44,8 @@ table caption {
 }
  
 table td,table th {
-    border-left: 1px solid #cbcbcb;
-    border-width: 0 0 0 1px;
+    border: 1px solid #cbcbcb;
+    border-width: 0 0 1px 1px;
     font-size: 20px;
     margin: 0;
     overflow: visible;
