@@ -74,7 +74,6 @@ def upload(project_id):
 @app.route("/")
 def show_project():
     data = {
-        "username":"default",
         "projects":[]
     }
     for project in projectDB.query_all():

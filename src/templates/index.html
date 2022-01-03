@@ -227,7 +227,7 @@
 		</script>
 	</head>
 	<body>
-		<div id="head_txt">欢迎, <span>{{data["username"]}}</span><br/>请选择或新建一个项目</div>
+		<div id="head_txt"><span>欢迎,</span><br/>请选择或新建一个项目</div>
 		<div id="center_div">
 			<div id="center_div_container">
 				{% for project in data["projects"] %}
@@ -239,7 +239,7 @@
 						<div class="desc">
 							{{project['desc']}}
 						</div>
-						<div class="project_card_inner_modi">Created at:<br/> {{ project['modi'] }}</div>
+						<div class="project_card_inner_modi">创建于:<br/> {{ project['modi'] }}</div>
 					</div>
 					<div class="del_btn" onclick="del({{project['id']}})">×</div>
 				</div>
