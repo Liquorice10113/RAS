@@ -1,5 +1,10 @@
 src/upload/
 
+src/*.png
+src/*.db
+src/*.pdf
+src/*.md
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

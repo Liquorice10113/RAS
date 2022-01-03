@@ -204,10 +204,10 @@ def page(project_id):
     elif request.args.get('type') =='3':
         return getVuls(project_id)  
     elif request.args.get('type') =='4':
-        getReport(project_id)
+        #getReport(project_id)
         return render_template('report.html',project_id=project_id)
     elif request.args.get('type') =='5':
-        resp = "风险统计"
+        return render_template('chart.html',project_id=project_id)
     elif request.args.get('type') =='6':
         resp = "不可接受风险处理"
     return resp
@@ -215,6 +215,10 @@ def page(project_id):
 @app.route("/<project_id>/report")
 def report_pdf(project_id):
     return getReport(project_id)
+
+@app.route("/<project_id>/chart")
+def chart_pdf(project_id):
+    return getChart(project_id)
 
 def getAssets(project_id):
     #assets = assetsDB.query(pid=project_id)
@@ -246,9 +250,14 @@ def getVuls(project_id):
 def getReport(project_id):
     R = Report(assetDB,threatDB,vulDB,project_id)
     data = R.getReport()
-    print(data)
+    #print(data)
     #format_report(data)
     #return send_file("test.pdf",as_attachment=False,mimetype="application/pdf")
     return format_report(data)
+
+def getChart(project_id):
+    R = Report(assetDB,threatDB,vulDB,project_id)
+    data = R.getReport()
+    return format_chart(data)
 
 app.run(debug=True)

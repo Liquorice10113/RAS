@@ -1,5 +1,6 @@
 import openpyxl
 import os
+from jinja2 import Template
 from flask import Flask, render_template, request, jsonify, send_file, Response
 from openpyxl import load_workbook
 
@@ -12,6 +13,10 @@ html {
     font-family: sans-serif;
     -ms-text-size-adjust: 100%;
     -webkit-text-size-adjust: 100%;
+    font-size:25px;
+}
+
+image {
 }
 
 table {
@@ -33,6 +38,7 @@ table {
 table caption {
     color: #000;
     font: italic 85%/1 arial,sans-serif;
+    font-size: 30px;
     padding: 1em 0;
     text-align: center;
 }
@@ -40,7 +46,7 @@ table caption {
 table td,table th {
     border-left: 1px solid #cbcbcb;
     border-width: 0 0 0 1px;
-    font-size: inherit;
+    font-size: 20px;
     margin: 0;
     overflow: visible;
     padding: .5em 1em;
@@ -66,17 +72,72 @@ h1 {
 
 #<div style="page-break-after: always;"></div>
 report_markdown_template = '''
-# <center>{0}</center>
-
 ## <center>风险评估报告 </center>
 
-### 风险分析结果如下
+### 综合风险分析结果如下
 | 资产 | 威胁 | 脆弱性 | 风险值 | 风险等级 |
 | :----: | :----: | :----: | :----: | :----: |
 '''
 
+chart_markdown_template = '''
+## <center>风险统计 </center>
+
+
+系统风险评估共识别出信息安全风险{{risks_len}}个：  
+
+<center>
+
+| 资产 | 威胁  |
+| :----: | :----: |
+| 极高风险 | {{risks_count[4]}} |
+| 高风险 | {{risks_count[3]}} |
+| 中风险 | {{risks_count[2]}} |
+| 低风险 | {{risks_count[1]}} |
+| 极低风险 | {{risks_count[0]}} |  
+
+
+![pie1](/mnt/c/Users/Derg/Desktop/RAS/src/pie1.png)  
+
+</center>
+
+其中:  
+
+<center>
+
+| 资产 | 威胁  |
+| :----: | :----: |
+| 不可接受风险 | {{unaccpt}} |
+| 可接受风险 | {{accpt}} |  
+
+![pie2](/mnt/c/Users/Derg/Desktop/RAS/src/pie2.png)  
+
+</center>
+'''
+
+import matplotlib
+import matplotlib.pyplot as plt
+from matplotlib.font_manager import FontProperties
+
+plt.rcParams['figure.figsize'] = (4, 3) # 设置figure_size尺寸
+plt.rcParams['image.interpolation'] = 'nearest' # 设置 interpolation style
+plt.rcParams['savefig.dpi'] = 120
+plt.rcParams['axes.unicode_minus'] = False
+plt.rcParams['font.family'] = 'SimHei'
+
+def pie(data,title='风险分布'):
+    if title == '是否可接受':
+        labels = [ '可接受','不可接受' ]
+        fn = 'pie2.png'
+    else:
+        labels = ['极高风险', '高风险', '中风险', '低风险', '极低风险']
+        fn = 'pie1.png'
+    X = list(data)
+    fig = plt.figure()
+    plt.pie(X, labels=labels, autopct='%1.2f%%')  # 画饼图（数据，数据对应的标签，百分数保留两位小数点）
+    plt.title(title)
+    plt.savefig(fn)
+
 def md2pdf():
-    path_wk = r'C:\Program Files (x86)\wkhtmltopdf\bin\wkhtmltopdf.exe' #安装位置
     config = pdfkit.configuration(wkhtmltopdf = '/usr/bin/wkhtmltopdf')
     
     input_filename = 'temp.md'
@@ -89,7 +150,7 @@ def md2pdf():
 
 def format_report(data,title="信息安全"):
     md = str(report_markdown_template)
-    md = md.format(title)
+    #md = md.format(title)
     for row in data:
         row_md =  '|' + ' | '.join(row) + '|\n'
         md += row_md
@@ -98,6 +159,31 @@ def format_report(data,title="信息安全"):
     #os.system("pandoc temp.md --pdf-engine=xelatex -o temp.pdf")
     md2pdf()
     return send_file("temp.pdf",as_attachment=False,mimetype="application/pdf")
+
+def format_chart(data):
+    accpt_threshold = 3
+    accpt = 0
+    unaccpt = 0
+    risks_len = len(data)
+    risks_count = [ 0 for _ in range(5) ]
+    for risk in data:
+        risk_rank = int(risk[-1])
+        risks_count[risk_rank] += 1
+        if risk_rank>accpt_threshold:
+            unaccpt += 1
+        else:
+            accpt += 1
+    md = str(chart_markdown_template)
+    md =  Template(md).render(risks_len=risks_len,risks_count=risks_count,accpt=accpt,unaccpt=unaccpt)
+    with open('temp.md','w') as f:
+        f.write(md)
+    pie(risks_count)
+    pie([accpt,unaccpt],'是否可接受')
+    #os.system("pandoc temp.md --pdf-engine=xelatex -o temp.pdf")
+    md2pdf()
+    return send_file("temp.pdf",as_attachment=False,mimetype="application/pdf")
+    
+
 
 def read_excel(fn):
     result = []
