@@ -7,6 +7,16 @@ from openpyxl import load_workbook
 from markdown import markdown
 import pdfkit
 
+import matplotlib
+import matplotlib.pyplot as plt
+from matplotlib.font_manager import FontProperties
+
+plt.rcParams['figure.figsize'] = (4, 3) # 设置figure_size尺寸
+plt.rcParams['image.interpolation'] = 'nearest' # 设置 interpolation style
+plt.rcParams['savefig.dpi'] = 120
+plt.rcParams['axes.unicode_minus'] = False
+plt.rcParams['font.family'] = 'SimHei'
+
 report_markdown_style = '''<meta charset="UTF-8">
 <style type="text/css">
 html {
@@ -114,22 +124,13 @@ chart_markdown_template = '''
 </center>
 '''
 
-import matplotlib
-import matplotlib.pyplot as plt
-from matplotlib.font_manager import FontProperties
-
-plt.rcParams['figure.figsize'] = (4, 3) # 设置figure_size尺寸
-plt.rcParams['image.interpolation'] = 'nearest' # 设置 interpolation style
-plt.rcParams['savefig.dpi'] = 120
-plt.rcParams['axes.unicode_minus'] = False
-plt.rcParams['font.family'] = 'SimHei'
 
 def pie(data,title='风险分布'):
     if title == '是否可接受':
         labels = [ '可接受','不可接受' ]
         fn = 'pie2.png'
     else:
-        labels = ['极高风险', '高风险', '中风险', '低风险', '极低风险']
+        labels = ['极高风险', '高风险', '中风险', '低风险', '极低风险'][::-1]
         fn = 'pie1.png'
     X = list(data)
     fig = plt.figure()
@@ -168,7 +169,7 @@ def format_chart(data):
     risks_count = [ 0 for _ in range(5) ]
     for risk in data:
         risk_rank = int(risk[-1])
-        risks_count[risk_rank] += 1
+        risks_count[risk_rank-1] += 1
         if risk_rank>accpt_threshold:
             unaccpt += 1
         else:
@@ -200,27 +201,27 @@ def read_csv(fn,tag='\t'):
             result.append( line.replace('\n','').split(tag) )
     return result[1:]
 
-secEventProbMat = secLossProbMat = riskMat = [ [i*j for i in range(5)] for j in range(5) ]
+secEventProbMat = secLossProbMat = riskMat = [ [i*j for i in range(1,6)] for j in range(1,6) ]
 def secEventRanks(v):
     if v<=5: return 1
     elif v<=11: return 2
     elif v<=16: return 3
     elif v<=21: return 4
-    elif v<=25: return 5
+    else: return 5
 
 def secLossRanks(v):
     if v<=5: return 1
     elif v<=10: return 2
     elif v<=15: return 3
     elif v<=20: return 4
-    elif v<=25: return 5
+    else: return 5
 
 def riskRanks(v):
     if v<=5: return 1
     elif v<=10: return 2
     elif v<=15: return 3
     elif v<=20: return 4
-    elif v<=25: return 5
+    else: return 5
 
 class Report():
     def __init__(self,aDB,tDB,vDB,project_id) -> None:
@@ -257,11 +258,11 @@ class Report():
         '''
         ((i,a,c),vul_level,thrt_freq) = entry
         value = int((c+i+a)/3)
-        loss = secEventProbMat[value][vul_level]
+        loss = secEventProbMat[value-1][vul_level-1]
         loss_rank = secLossRanks(loss)
-        prob = secEventProbMat[thrt_freq][vul_level]
+        prob = secEventProbMat[thrt_freq-1][vul_level-1]
         prob_rank = secEventRanks(prob)
-        risk = riskMat[loss_rank][prob_rank]
+        risk = riskMat[loss_rank-1][prob_rank-1]
         risk_rank = riskRanks(risk)
         return risk,risk_rank
 

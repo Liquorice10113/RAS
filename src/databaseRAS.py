@@ -186,3 +186,5 @@ class Project:
         self.db.query(sql)
         sql = '''DELETE FROM threat WHERE project_id = '{0}' '''.format(pid)
         self.db.query(sql)
+        sql = '''DELETE FROM vulnerability WHERE project_id = '{0}' '''.format(pid)
+        self.db.query(sql)
