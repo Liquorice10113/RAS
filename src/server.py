@@ -43,6 +43,8 @@ def genRandomId():
 def upload(project_id):
     f = request.files['file']
     table_type = request.args.get("tt")
+    if not os.path.isdir(upload_dir):
+        os.makedirs(upload_dir)
     if f:
         print(f.filename)
         fformat = f.filename.split('.')[-1]
